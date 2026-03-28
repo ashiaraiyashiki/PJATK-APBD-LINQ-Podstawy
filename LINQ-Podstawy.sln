@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LINQ-Podstawy", "LINQ-Podstawy\LINQ-Podstawy.csproj", "{09531052-FAEE-41D6-84F3-DE1856F9260E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{09531052-FAEE-41D6-84F3-DE1856F9260E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09531052-FAEE-41D6-84F3-DE1856F9260E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09531052-FAEE-41D6-84F3-DE1856F9260E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09531052-FAEE-41D6-84F3-DE1856F9260E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
