@@ -11,6 +11,10 @@
    * Metody LINQ możemy uruchamiać na kolekcjach, które implementują interfejs IEnumerable,
    * czyli np. listach, tablicach czy wynikach innych zapytań LINQ.
    *
+   * LINQ występuje w dwóch wariantach składniowych - składni zapytań (podobnej do SQL'a) oraz składni wykorzystującej metody.
+   * Składni zapytań jest obecnie wypierana przez rozwiązanie funkcyjne i używa się jej do czytelniejszego zapisu rozwiązania niektórych problemów,
+   * które nie zostały jeszcze dobrze obsłużone przez metody.
+   *
    * Ważne: LINQ jest leniwe (deferred execution) – najpierw buduje zapytanie, a wykonuje je dopiero
    * w momencie jego użycia (np. foreach, ToList, Count, FirstOrDefault).
    * /
@@ -39,6 +43,11 @@
     var rezultat2 = Dane.Studenci
         .Select(stud => new {Imie = stud.Imie, Nazwisko = stud.Nazwisko});
     Wypisz(rezultat2);
+    
+    Console.WriteLine("\nEkwiwalent zapytania z query-syntax");
+    var rezultat3 = from student in Dane.Studenci
+                                            select new {Imie = student.Imie, Nazwisko = student.Nazwisko};
+    Wypisz(rezultat3);
 }
 
 // 2. Where - filtrowanie kolekcji
@@ -48,6 +57,12 @@
     Console.WriteLine("Pobranie studentów o imieniu zaczynającym się od litery 'A'");
     var rezultat = Dane.Studenci.Where(stud => stud.Imie.StartsWith('A'));
     Wypisz(rezultat);
+    
+    Console.WriteLine("\nEkwiwalent zapytania z query-syntax");
+    var rezultat2 = from student in Dane.Studenci
+                                        where student.Imie.StartsWith('A') 
+                                        select student;
+    Wypisz(rezultat2);
 }
 
 // 3. OrderBy / ThenBy / OrderByDescending / ThenByDescending - sortowanie
@@ -59,6 +74,12 @@
         .OrderBy(stud => stud.Imie)
         .ThenByDescending(stud => stud.Nazwisko);
     Wypisz(rezultat);
+    
+    Console.WriteLine("\nEkwiwalent zapytania z query-syntax");
+    var rezultat2 = from student in Dane.Studenci
+                                            orderby student.Imie, student.Nazwisko descending
+                                                select student;
+    Wypisz(rezultat2);
 }
 
 // 4. FirstOrDefault - pobranie pojedynczego (pierwszego) elementu z kolekcji
@@ -69,13 +90,13 @@
     var rezultat = Dane.Studenci.FirstOrDefault();
     Console.WriteLine(rezultat);
     
-    Console.WriteLine();
-    
-    Console.WriteLine("Pobranie pierwszego studenta, którego rok urodzenia jest większy od 5000 - nie ma takiego, więc metoda zwraca wartość domyślną dla typu Student, czyli null");
+    Console.WriteLine("\nPobranie pierwszego studenta, którego rok urodzenia jest większy od 5000 - nie ma takiego, więc metoda zwraca wartość domyślną dla typu Student, czyli null");
     // FirstOrDefault pozwala na przekazanie warunku do przefiltrowania kolekcji. Jest to równorzędne z przypadkiem,
     // gdzie wywołalibyśmy najpierw metodę Where, a później pustą metodę FirstOrDefault.
     var rezultat2 = Dane.Studenci.FirstOrDefault(stud => stud.DataUrodzenia.Year >= 5000);
     Console.WriteLine(rezultat2?.ToString() ?? "Nic tu nie ma");
+    
+    Console.WriteLine("\nEkwiwalent zapytania z query-syntax nie istnieje");
 }
 
 // 5. Any / All - sprawdzanie warunku dla całej kolekcji
@@ -85,12 +106,12 @@
     Console.WriteLine("Czy wszyscy studenci mają nazwiska kończące się literą 'a'?");
     var rezultat = Dane.Studenci.All(stud => stud.Nazwisko.EndsWith('a'));
     Console.WriteLine(rezultat);
-
-    Console.WriteLine();
-
-    Console.WriteLine("Czy jakikolwiek student ma nazwisko kończące się literą 'a'?");
+    
+    Console.WriteLine("\nCzy jakikolwiek student ma nazwisko kończące się literą 'a'?");
     var rezultat2 = Dane.Studenci.Any(stud => stud.Nazwisko.EndsWith('a'));
     Console.WriteLine(rezultat2);
+    
+    Console.WriteLine("\nEkwiwalent zapytania z query-syntax nie istnieje");
 }
 
 // 6. Count - zliczanie elementów
@@ -101,11 +122,11 @@
     var rezultat = Dane.Studenci.Count(stud => stud.Nazwisko.EndsWith('a'));
     Console.WriteLine(rezultat);
 
-    Console.WriteLine();
-
-    Console.WriteLine("Ilu studentów ma imię zaczynające się od 'E'?");
+    Console.WriteLine("\nIlu studentów ma imię zaczynające się od 'E'?");
     var rezultat2 = Dane.Studenci.Where(stud => stud.Imie.StartsWith('E')).Count();
     Console.WriteLine(rezultat2);
+    
+    Console.WriteLine("\nEkwiwalent zapytania z query-syntax nie istnieje");
     
 }
 
@@ -120,8 +141,8 @@
 
     Console.WriteLine("\nZ użyciem distinct:");
     Console.WriteLine(string.Join(", ", list.Distinct()));
-
-    Console.WriteLine();
+    
+    Console.WriteLine("\nEkwiwalent zapytania z query-syntax nie istnieje");
 }
 
 // 8. Skip i Take - pomijanie i pobieranie konkretnej liczby rekordów
@@ -131,6 +152,8 @@
     Console.WriteLine("Pominięcie dwóch pierwszych studentów z kolekcji i pobranie dwóch kolejnych");
     var rezultat = Dane.Studenci.Skip(2).Take(2);
     Wypisz(rezultat);
+    
+    Console.WriteLine("\nEkwiwalent zapytania z query-syntax nie istnieje");
 }
 
 // 9. Join - łączenie danych z dwóch kolekcji na podstawie pary kluczów (Inner join z SQL'a)
@@ -160,6 +183,15 @@
             (studentPrzedmiot, przedmiot) => new { Student = studentPrzedmiot.Student, Przedmiot = przedmiot }
         );
     Wypisz(rezultat2);
+    
+    Console.WriteLine("\nEkwiwalent zapytania z query-syntax");
+    var rezultat3 = from student in Dane.Studenci
+                                                join zapis in Dane.Zapisy
+                                                on student.Id equals zapis.IdStudenta
+                                                join przedmiot in Dane.Przedmioty
+                                                on zapis.IdPrzedmiotu equals przedmiot.Id
+                                                select new { Student = student, Przedmiot = przedmiot };
+    Wypisz(rezultat3);
 }
 
 // 10. GroupBy - grupowanie danych
@@ -175,6 +207,11 @@
     {
         Console.WriteLine($"Litera: {grupa.OstatniaLitera}, Studenci: {string.Join(", ", grupa.Studenci)}");
     }
+    
+    Console.WriteLine("\nEkwiwalent zapytania z query-syntax");
+    var rezultat3 = from student in Dane.Studenci
+                                                  group student by student.Nazwisko.Last() into grupa
+                                                  select new {OstatniaLitera = grupa.Key, Studenci = grupa.ToList()};
 }
 
 // 11. SelectMany - spłaszczanie danych
@@ -190,6 +227,8 @@
             (student, ocena) => new { Student = student.NumerIndeksu, Ocena = ocena }
         );
     Wypisz(rezultat);
+    
+    Console.WriteLine("\nEkwiwalent zapytania z query-syntax nie istnieje");
 }
 
 // 12. Average / Max - podstawowe agregacje
@@ -205,6 +244,8 @@
     Console.WriteLine("Najwyższa ocena każdego studenta:");
     var rezultat2 = Dane.Studenci.Select(e => new { Indeks = e.NumerIndeksu, NajwyzszaOcena = e.Oceny.Max() });
     Wypisz(rezultat2);
+    
+    Console.WriteLine("\nEkwiwalent zapytania z query-syntax nie istnieje");
 }
 
 
